@@ -1,0 +1,18 @@
+type User {
+  username: String
+  password: String
+}
+
+type JwtToken {
+  accessToken: String
+}
+
+input AuthCredentials {
+  username: String
+  password: String
+}
+
+type Query {
+  signIn(signInForm: AuthCredentials!): JwtToken
+  signUp(signUpForm: AuthCredentials!): User
+}
