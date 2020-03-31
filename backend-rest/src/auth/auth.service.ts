@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -18,6 +19,9 @@ export class AuthService {
   ) {}
 
   async signUp(signUpForm: AuthCredentials) {
+    if (this.getUserByName(signUpForm.username))
+      throw new ConflictException('Username already exists');
+
     const hashedPasswordForm = {
       ...signUpForm,
       password: passwordHash.generate(signUpForm.password),
