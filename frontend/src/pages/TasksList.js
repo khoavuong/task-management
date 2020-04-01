@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Button, FormGroup, Input, Card, CardBody } from "reactstrap";
 import styled from "styled-components";
-import axios from "axios";
 import { useHistory, Redirect } from "react-router";
+import { gql } from "apollo-boost";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 
 const Wrapper = styled.div`
   margin: auto;
@@ -20,21 +21,50 @@ const Row = styled.div`
   color: white;
 `;
 
+const GET_TASKS = gql`
+  {
+    tasks {
+      _id
+      userId
+      title
+      description
+      status
+    }
+  }
+`;
+
+const DELETE_TASK = gql`
+  mutation DeleteTask($id: ID!) {
+    deleteTask(id: $id)
+  }
+`;
+
+const UPDATE_STATUS = gql`
+  mutation UpdateStatus($status: TaskStatus!, $id: ID!) {
+    updateStatus(id: $id, newStatus: { status: $status }) {
+      _id
+      status
+      title
+      description
+    }
+  }
+`;
+
 const TasksList = () => {
   const history = useHistory();
   const [tasks, setTasks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const { loading, error, data } = useQuery(GET_TASKS);
+  const [deleteTask] = useMutation(DELETE_TASK);
+  const [updateStatus] = useMutation(UPDATE_STATUS);
 
   useEffect(() => {
-    (async () => {
-      const token = localStorage.getItem("accessToken");
-      const response = await axios.get(`http://localhost:3000/tasks`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setTasks(response.data);
-    })();
-  }, []);
+    if (data) setTasks(data.tasks);
+  }, [data]);
+
+  if (loading) return "Loading...";
+  if (error) return `Error! ${error.message}`;
 
   if (!localStorage.getItem("accessToken")) return <Redirect to="/" />;
 
@@ -71,14 +101,14 @@ const TasksList = () => {
                   name="status"
                   id="status"
                   defaultValue={task.status}
-                  onChange={e => updateTask(e.target.value, task._id)}
+                  onChange={e => onStatusChange(e.target.value, task._id)}
                 >
                   <option value="OPEN">Open</option>
                   <option value="IN_PROGRESS">In Progress</option>
                   <option value="DONE">Done</option>
                 </Input>
               </FormGroup>
-              <Button color="danger" onClick={() => deleteTask(task._id)}>
+              <Button color="danger" onClick={() => onDeleteClick(task._id)}>
                 Delete
               </Button>
             </Row>
@@ -88,16 +118,8 @@ const TasksList = () => {
     });
   };
 
-  const updateTask = (status, id) => {
-    const token = localStorage.getItem("accessToken");
-    axios
-      .patch(
-        `http://localhost:3000/tasks/${id}/status`,
-        { status },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
+  const onStatusChange = (status, id) => {
+    updateStatus({ variables: { status, id } })
       .then(() => {
         setTasks(
           tasks.map(task => {
@@ -112,18 +134,12 @@ const TasksList = () => {
       .catch(error => console.log(error));
   };
 
-  const deleteTask = id => {
-    const token = localStorage.getItem("accessToken");
-    axios
-      .delete(`http://localhost:3000/tasks/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+  const onDeleteClick = id => {
+    deleteTask({ variables: { id } })
       .then(() => {
         setTasks(tasks.filter(task => task._id !== id));
       })
-      .catch(error => {
-        console.log(error);
-      });
+      .catch(err => console.log(err));
   };
 
   const logOut = () => {

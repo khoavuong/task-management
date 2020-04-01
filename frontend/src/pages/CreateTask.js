@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import axios from "axios";
 import {
   Card,
   CardBody,
@@ -12,6 +11,8 @@ import {
 } from "reactstrap";
 import { useHistory, Redirect } from "react-router";
 import ErrorMessage from "../components/ErrorMessage";
+import { gql } from "apollo-boost";
+import { useMutation } from "@apollo/react-hooks";
 
 const FormWrapper = styled.div`
   display: flex;
@@ -21,30 +22,37 @@ const FormWrapper = styled.div`
   width: 100vw;
 `;
 
+const CREATE_TASK = gql`
+  mutation CreateTask($title: String!, $description: String!) {
+    createTask(newTaskForm: { title: $title, description: $description }) {
+      _id
+      userId
+      title
+      description
+      status
+    }
+  }
+`;
+
 const CreateTask = () => {
   const history = useHistory();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [errorMessages, setErrorMessages] = useState(null);
+  const [createTask] = useMutation(CREATE_TASK);
+
   if (!localStorage.getItem("accessToken")) return <Redirect to="/" />;
 
   const submitTask = e => {
     e.preventDefault();
     setErrorMessages(null);
-    const token = localStorage.getItem("accessToken");
-    axios
-      .post(
-        "http://localhost:3000/tasks",
-        { title, description },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      )
+
+    createTask({ variables: { title, description } })
       .then(() => {
         history.push("/task");
       })
       .catch(err => {
-        const errMsg = err.response.data.message;
+        const errMsg = err.graphQLErrors[0].message.message;
         setErrorMessages(errMsg);
       });
   };

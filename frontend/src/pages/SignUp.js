@@ -10,8 +10,9 @@ import {
   Input
 } from "reactstrap";
 import styled from "styled-components";
-import axios from "axios";
 import ErrorMessage from "../components/ErrorMessage";
+import { gql } from "apollo-boost";
+import { useMutation } from "@apollo/react-hooks";
 
 const FormWrapper = styled.div`
   display: flex;
@@ -21,11 +22,22 @@ const FormWrapper = styled.div`
   width: 100vw;
 `;
 
+const SIGN_UP = gql`
+  mutation SignUp($username: String!, $password: String!) {
+    signUp(signUpForm: { username: $username, password: $password }) {
+      username
+      password
+    }
+  }
+`;
+
 const SignUp = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const history = useHistory();
+  const [signUp] = useMutation(SIGN_UP);
+
   if (localStorage.getItem("accessToken")) return <Redirect to="/task" />;
 
   const toSignIn = () => {
@@ -35,18 +47,15 @@ const SignUp = () => {
   const formSubmit = async e => {
     e.preventDefault();
     setError(null);
-    axios
-      .post("http://localhost:3000/auth/signup", {
-        username,
-        password
-      })
-      .then(res => {
-        history.push("/signin");
+    signUp({ variables: { username: username, password: password } })
+      .then(() => {
+        history.push("/");
       })
       .catch(err => {
-        const errMsg = err.response.data.message;
-        setError(errMsg);
+        setError(err.graphQLErrors[0].message.message);
       });
+    setUsername("");
+    setPassword("");
   };
 
   return (
