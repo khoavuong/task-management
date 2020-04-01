@@ -35,7 +35,7 @@ export class TaskService {
     return await newTask.save();
   }
 
-  async deleteTask(id: String, user): Promise<void> {
+  async deleteTask(id: String, user) {
     try {
       await this.tasks.deleteOne({ _id: id, userId: user._id });
     } catch (error) {

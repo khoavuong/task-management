@@ -41,7 +41,7 @@ export class TaskResolver {
   }
 
   @Mutation()
-  deleteTask(@Args('id') id: String, @Args('req') req): Promise<void> {
+  deleteTask(@Args('id') id: String, @Args('req') req) {
     return this.taskService.deleteTask(id, req.user);
   }
 }

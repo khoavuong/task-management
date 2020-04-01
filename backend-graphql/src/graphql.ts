@@ -31,6 +31,10 @@ export class JwtToken {
 }
 
 export abstract class IMutation {
+    abstract signIn(signInForm: AuthCredentials): JwtToken | Promise<JwtToken>;
+
+    abstract signUp(signUpForm: AuthCredentials): User | Promise<User>;
+
     abstract createTask(newTaskForm: CreateTaskDto): Task | Promise<Task>;
 
     abstract updateStatus(id: string, newStatus?: UpdateTaskStatusDto): Task | Promise<Task>;
@@ -39,10 +43,6 @@ export abstract class IMutation {
 }
 
 export abstract class IQuery {
-    abstract signIn(signInForm: AuthCredentials): JwtToken | Promise<JwtToken>;
-
-    abstract signUp(signUpForm: AuthCredentials): User | Promise<User>;
-
     abstract task(taskID: string): Task | Promise<Task>;
 
     abstract tasks(): Task[] | Promise<Task[]>;
