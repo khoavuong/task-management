@@ -20,7 +20,7 @@ export class AuthService {
   ) {}
 
   async signUp(signUpForm: AuthCredentials): Promise<User> {
-    if (await this.getUserByName(signUpForm.username))
+    if (this.getUserByName(signUpForm.username))
       throw new ConflictException('Username already exists');
 
     const hashedPasswordForm = {
