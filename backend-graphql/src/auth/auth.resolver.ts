@@ -1,4 +1,4 @@
-import { Resolver, Query, Args } from '@nestjs/graphql';
+import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { AuthCredentials } from './dto/auth-credentials.dto';
 import { UsePipes, ValidationPipe } from '@nestjs/common';
@@ -9,13 +9,13 @@ import { JwtToken } from 'src/graphql';
 export class AuthResolver {
   constructor(private authService: AuthService) {}
 
-  @Query()
+  @Mutation()
   @UsePipes(ValidationPipe)
   signIn(@Args('signInForm') signInForm: AuthCredentials): Promise<JwtToken> {
     return this.authService.signIn(signInForm);
   }
 
-  @Query()
+  @Mutation()
   @UsePipes(ValidationPipe)
   signUp(@Args('signUpForm') signUpForm: AuthCredentials): Promise<User> {
     return this.authService.signUp(signUpForm);
