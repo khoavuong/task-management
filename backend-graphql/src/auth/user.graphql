@@ -12,7 +12,7 @@ input AuthCredentials {
   password: String
 }
 
-type Query {
+type Mutation {
   signIn(signInForm: AuthCredentials!): JwtToken
   signUp(signUpForm: AuthCredentials!): User
 }
