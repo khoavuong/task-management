@@ -55,13 +55,16 @@ const TasksList = () => {
   const [tasks, setTasks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const { loading, error, data } = useQuery(GET_TASKS);
+  const { loading, error, data, refetch } = useQuery(GET_TASKS);
   const [deleteTask] = useMutation(DELETE_TASK);
   const [updateStatus] = useMutation(UPDATE_STATUS);
 
   useEffect(() => {
-    if (data) setTasks(data.tasks);
-  }, [data]);
+    (() => {
+      refetch();
+      if (data) setTasks(data.tasks);
+    })();
+  }, [data, refetch]);
 
   if (loading) return "Loading...";
   if (error) return `Error! ${error.message}`;
