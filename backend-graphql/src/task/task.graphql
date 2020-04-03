@@ -1,6 +1,7 @@
 type Task {
   _id: ID
   user: User
+  userId: ID
   title: String
   description: String
   status: TaskStatus

@@ -53,6 +53,7 @@ export abstract class IQuery {
 export class Task {
     _id?: string;
     user?: User;
+    userId?: string;
     title?: string;
     description?: string;
     status?: TaskStatus;
