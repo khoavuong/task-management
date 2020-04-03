@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './model/user.model';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthResolver } from './auth.resolver';
+import { TaskModule } from 'src/task/task.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AuthResolver } from './auth.resolver';
         noTimestamp: true,
       },
     }),
+    forwardRef(() => TaskModule),
   ],
   providers: [AuthService, AuthResolver],
   exports: [AuthService],

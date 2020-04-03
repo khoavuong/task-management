@@ -1,19 +1,36 @@
-import { Resolver, Query, Args, Mutation } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Args,
+  Mutation,
+  ResolveField,
+  Parent,
+} from '@nestjs/graphql';
 import { TaskService } from './task.service';
 import { Task } from './model/task.model';
 import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
+import { AuthService } from 'src/auth/auth.service';
 
 @UseGuards(AuthGuard)
 @Resolver('Task')
 export class TaskResolver {
-  constructor(private taskService: TaskService) {}
+  constructor(
+    private taskService: TaskService,
+    private authService: AuthService,
+  ) {}
 
   @Query()
   async tasks(@Args('req') req): Promise<Task[]> {
     return this.taskService.getAllTasks(req.user);
+  }
+
+  @ResolveField()
+  async user(@Parent() task) {
+    const user = await this.authService.getUserById(task.userId);
+    return user;
   }
 
   @Query()

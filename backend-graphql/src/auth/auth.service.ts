@@ -43,13 +43,20 @@ export class AuthService {
   }
 
   async getUserByName(username: String): Promise<User> {
-    const user = await this.users.findOne({ username });
-    return user;
+    try {
+      const user = await this.users.findOne({ username });
+      user.password = '';
+      return user;
+    } catch (err) {
+      throw new NotFoundException('User not found');
+    }
   }
 
   async getUserById(userId: String): Promise<User> {
     try {
-      return await this.users.findById(userId);
+      const user = await this.users.findById(userId);
+      user.password = '';
+      return user;
     } catch (error) {
       throw new NotFoundException('User not found');
     }

@@ -1,6 +1,8 @@
 type User {
+  _id: ID
   username: String
   password: String
+  tasks: [Task]
 }
 
 type JwtToken {
@@ -10,6 +12,10 @@ type JwtToken {
 input AuthCredentials {
   username: String
   password: String
+}
+
+type Query {
+  user(name: String): User
 }
 
 type Mutation {
