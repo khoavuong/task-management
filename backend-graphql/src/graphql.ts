@@ -45,9 +45,15 @@ export abstract class IMutation {
 export abstract class IQuery {
     abstract user(name?: string): User | Promise<User>;
 
+    abstract users(): User[] | Promise<User[]>;
+
     abstract task(taskID: string): Task | Promise<Task>;
 
     abstract tasks(): Task[] | Promise<Task[]>;
+}
+
+export abstract class ISubscription {
+    abstract userSignedUp(): User | Promise<User>;
 }
 
 export class Task {

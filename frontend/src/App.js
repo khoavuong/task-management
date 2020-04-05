@@ -5,6 +5,7 @@ const SignUp = lazy(() => import("./pages/SignUp"));
 const SignIn = lazy(() => import("./pages/SignIn"));
 const TasksList = lazy(() => import("./pages/TasksList"));
 const CreateTask = lazy(() => import("./pages/CreateTask"));
+const UserManagement = lazy(() => import("./pages/UserManagement"));
 
 export default class App extends Component {
   render() {
@@ -17,6 +18,7 @@ export default class App extends Component {
             <Route exact path="/signup" component={SignUp} />
             <Route exact path="/signin" component={SignIn} />
             <Route exact path="/task/create" component={CreateTask} />
+            <Route exact path="/admin" component={UserManagement} />
           </Switch>
         </Suspense>
       </BrowserRouter>

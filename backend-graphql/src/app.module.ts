@@ -13,7 +13,16 @@ import { AuthModule } from './auth/auth.module';
         path: join(process.cwd(), 'src/graphql.ts'),
         outputAs: 'class',
       },
-      context: request => request,
+      context: ({ req, connection }) => {
+        if (connection) return connection.context;
+        return { req };
+      },
+      installSubscriptionHandlers: true,
+      /* subscriptions: {
+        onConnect: async connectionParam => {
+          return false;
+        },
+      }, */
     }),
     MongooseModule.forRoot('mongodb://localhost:27017/nest', {
       useNewUrlParser: true,

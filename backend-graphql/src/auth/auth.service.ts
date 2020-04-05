@@ -43,13 +43,17 @@ export class AuthService {
   }
 
   async getUserByName(username: String): Promise<User> {
-    try {
+    /* try {
       const user = await this.users.findOne({ username });
       user.password = '';
       return user;
     } catch (err) {
       throw new NotFoundException('User not found');
-    }
+    } */
+
+    const user = await this.users.findOne({ username });
+    if (user) user.password = '';
+    return user;
   }
 
   async getUserById(userId: String): Promise<User> {
@@ -60,5 +64,14 @@ export class AuthService {
     } catch (error) {
       throw new NotFoundException('User not found');
     }
+  }
+
+  async getAllUsers() {
+    let allUsers = await this.users.find();
+    let allUsersWithoutPasswordExploit = allUsers.map(user => {
+      user.password = null;
+      return user;
+    });
+    return allUsersWithoutPasswordExploit;
   }
 }

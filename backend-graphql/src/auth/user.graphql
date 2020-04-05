@@ -16,9 +16,14 @@ input AuthCredentials {
 
 type Query {
   user(name: String): User
+  users: [User]
 }
 
 type Mutation {
   signIn(signInForm: AuthCredentials!): JwtToken
   signUp(signUpForm: AuthCredentials!): User
+}
+
+type Subscription {
+  userSignedUp: User
 }
