@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { useHistory, Redirect } from "react-router";
 import { gql } from "apollo-boost";
 import { useMutation, useQuery } from "@apollo/react-hooks";
+import "./TaskList.scss";
 
 const Wrapper = styled.div`
   margin: auto;
@@ -74,24 +75,24 @@ const TasksList = () => {
   const tasksRender = () => {
     let filterdTasks;
     if (!searchTerm && statusFilter)
-      filterdTasks = tasks.filter(task => task.status === statusFilter);
+      filterdTasks = tasks.filter((task) => task.status === statusFilter);
     else if (searchTerm && !statusFilter)
       filterdTasks = tasks.filter(
-        task =>
+        (task) =>
           task.title.includes(searchTerm) ||
           task.description.includes(searchTerm)
       );
     else if (searchTerm && statusFilter)
       filterdTasks = tasks
         .filter(
-          task =>
+          (task) =>
             task.title.includes(searchTerm) ||
             task.description.includes(searchTerm)
         )
-        .filter(task => task.status === statusFilter);
+        .filter((task) => task.status === statusFilter);
     else filterdTasks = tasks;
 
-    return filterdTasks.map(task => {
+    return filterdTasks.map((task) => {
       return (
         <Card key={task._id} style={{ marginBottom: "20px" }}>
           <CardBody>
@@ -104,7 +105,7 @@ const TasksList = () => {
                   name="status"
                   id="status"
                   defaultValue={task.status}
-                  onChange={e => onStatusChange(e.target.value, task._id)}
+                  onChange={(e) => onStatusChange(e.target.value, task._id)}
                 >
                   <option value="OPEN">Open</option>
                   <option value="IN_PROGRESS">In Progress</option>
@@ -125,7 +126,7 @@ const TasksList = () => {
     updateStatus({ variables: { status, id } })
       .then(() => {
         setTasks(
-          tasks.map(task => {
+          tasks.map((task) => {
             if (task._id === id) {
               const temp = { ...task };
               temp.status = status;
@@ -134,15 +135,15 @@ const TasksList = () => {
           })
         );
       })
-      .catch(error => console.log(error));
+      .catch((error) => console.log(error));
   };
 
-  const onDeleteClick = id => {
+  const onDeleteClick = (id) => {
     deleteTask({ variables: { id } })
       .then(() => {
-        setTasks(tasks.filter(task => task._id !== id));
+        setTasks(tasks.filter((task) => task._id !== id));
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   const logOut = () => {
@@ -150,12 +151,12 @@ const TasksList = () => {
     history.push("/");
   };
 
-  const filterStatus = e => {
+  const filterStatus = (e) => {
     const filteredStatus = e.target.value;
     setStatusFilter(filteredStatus);
   };
 
-  const search = e => {
+  const search = (e) => {
     const searchTerm = e.target.value;
     setSearchTerm(searchTerm);
   };
@@ -163,8 +164,8 @@ const TasksList = () => {
   return (
     <Wrapper>
       <Row>
-        <h1>Get things done</h1>
-        <div>
+        <h1 className="title">Get things done</h1>
+        <div className="button-group">
           <Button
             style={{ marginRight: "15px" }}
             onClick={() => history.push("/task/create")}
